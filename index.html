@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Morpion Coloré</title>
+<meta name="description" content="Jeu de morpion coloré, simple et fun, compatible Google AdSense." />
+<style>
+body{
+  margin:0;
+  font-family:'Arial Rounded MT Bold', Arial, sans-serif;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+.container{
+  background:#ffffff;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.25);
+  text-align:center;
+  width:320px;
+}
+h1{
+  margin:0;
+  color:#764ba2;
+}
+.board{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:20px 0;
+}
+.scoreboard{
+  display:flex;
+  justify-content:space-around;
+  margin:15px 0;
+}
+.score{
+  width:120px;
+  padding:10px;
+  border-radius:14px;
+  font-size:1.2rem;
+  font-weight:bold;
+}
+.score span{font-size:1.6rem}
+.score.x{background:#667eea;color:#fff}
+.score.o{background:#ff6b6b;color:#fff}
+.cell{
+  width:90px;
+  height:90px;
+  font-size:2.8rem;
+  cursor:pointer;
+  border:none;
+  border-radius:16px;
+  background:#f3f4ff;
+  color:#333;
+  transition:.2s;
+}
+.cell:hover{
+  background:#dfe3ff;
+  transform:scale(1.05);
+}
+.status{
+  margin:10px 0;
+  font-weight:bold;
+  color:#333;
+}
+button.reset{
+  margin-top:10px;
+  padding:12px;
+  width:100%;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;
+  font-size:1rem;
+  cursor:pointer;
+}
+button.reset:hover{opacity:.9}
+.ad-zone{
+  margin-top:15px;
+  font-size:0.8rem;
+  color:#764ba2;
+  border:2px dashed #c7c9ff;
+  border-radius:12px;
+  padding:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Morpion</h1>
+
+<!-- Scoreboard -->
+<div class="scoreboard">
+  <div class="score x">X<br><span id="scoreX">0</span></div>
+  <div class="score o">O<br><span id="scoreO">0</span></div>
+</div>
+
+<div class="board" id="board"></div>
+
+  <div class="status" id="status"></div>
+  <button class="reset" onclick="resetGame()">Rejouer</button>
+
+  <div class="ad-zone">
+    Publicité Google AdSense
+  </div>
+</div>
+
+<script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let gameOver = false;
+let score = { X: 0, O: 0 };
+let winningPattern = [];
+
+const boardDiv = document.getElementById("board");
+const statusDiv = document.getElementById("status");
+
+const winPatterns = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+function drawBoard(){
+  boardDiv.innerHTML = "";
+  board.forEach((cell, index) => {
+    const btn = document.createElement("button");
+    btn.className = "cell";
+    btn.textContent = cell;
+
+    if(winningPattern.includes(index)){
+      btn.style.background = cell === "X" ? "#667eea" : "#ff6b6b";
+      btn.style.color = "#fff";
+    } else {
+      btn.style.color = cell === "X" ? "#667eea" : cell === "O" ? "#ff6b6b" : "#333";
+    }
+
+    btn.onclick = () => play(index);
+    boardDiv.appendChild(btn);
+  });
+
+  document.getElementById('scoreX').textContent = score.X;
+  document.getElementById('scoreO').textContent = score.O;
+}
+
+function play(index){
+  if(board[index] || gameOver) return;
+  board[index] = currentPlayer;
+  checkWin();
+  if(!gameOver){
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+  }
+  drawBoard();
+}
+
+function checkWin(){
+  for(const pattern of winPatterns){
+    const [a,b,c] = pattern;
+    if(board[a] && board[a] === board[b] && board[a] === board[c]){
+      winningPattern = pattern;
+      score[board[a]]++;
+      statusDiv.innerHTML = `🎉 Joueur ${board[a]} gagne !<br>Score — X : ${score.X} | O : ${score.O}`;
+      gameOver = true;
+      return;
+    }
+  }
+  if(!board.includes("")){
+    statusDiv.textContent = "Match nul 🤝";
+    gameOver = true;
+  }
+}
+
+function resetGame(){
+  board = ["", "", "", "", "", "", "", "", ""];
+  currentPlayer = "X";
+  gameOver = false;
+  winningPattern = [];
+  statusDiv.textContent = "";
+  drawBoard();
+}
+
+drawBoard();
+</script>
+
+</body>
+</html>
 
